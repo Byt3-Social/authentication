@@ -63,7 +63,11 @@ public class LoginController {
                 user = userService.registerUser(jwtPayload);
             }
 
-            return new ResponseEntity<User>(user, HttpStatus.OK);
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", generatedToken);
+            response.put("user", user);
+
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
         } else {
             Map<String, String> response = new HashMap<String, String>();
             response.put("error", "invalid token");

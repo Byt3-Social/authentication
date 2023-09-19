@@ -1,5 +1,6 @@
 package com.byt3social.authentication.controllers;
 
+import com.byt3social.authentication.exceptions.InvalidTokenException;
 import com.byt3social.authentication.models.JWTPayload;
 import com.byt3social.authentication.models.User;
 import com.byt3social.authentication.repositories.UserRepository;
@@ -72,10 +73,7 @@ public class LoginController {
 
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
         } else {
-            Map<String, String> response = new HashMap<String, String>();
-            response.put("error", "invalid token");
-
-            return new ResponseEntity<Map<String, String>>(response, HttpStatus.UNAUTHORIZED);
+            throw new InvalidTokenException();
         }
     }
 }

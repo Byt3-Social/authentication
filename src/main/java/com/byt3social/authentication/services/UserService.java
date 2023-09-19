@@ -12,12 +12,6 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public User userExists(JWTPayload jwtPayload) {
-        User user = userRepository.findByEmail(jwtPayload.getEmail().asString());
-
-        return user;
-    }
-
     public User registerUser(JWTPayload jwtPayload) {
         User user = new User(jwtPayload);
         userRepository.save(user);

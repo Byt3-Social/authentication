@@ -2,6 +2,7 @@ package com.byt3social.authentication.controllers;
 
 import com.byt3social.authentication.models.JWTPayload;
 import com.byt3social.authentication.models.User;
+import com.byt3social.authentication.repositories.UserRepository;
 import com.byt3social.authentication.services.TokenService;
 import com.byt3social.authentication.services.UserService;
 import lombok.Getter;
@@ -38,6 +39,8 @@ public class LoginController {
     private TokenService tokenService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("")
     public ResponseEntity<Void> login() {
@@ -55,7 +58,7 @@ public class LoginController {
         if(validToken) {
             JWTPayload jwtPayload = tokenService.getTokenClaims(generatedToken);
 
-            User user = userService.userExists(jwtPayload);
+            User user = userRepository.findByEmail(jwtPayload.getEmail().asString());
 
             if(user != null) {
                 user = userService.updateUserLastLogin(user);

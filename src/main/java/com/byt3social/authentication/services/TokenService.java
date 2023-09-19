@@ -35,6 +35,8 @@ public class TokenService {
     private String clientSecret;
     @Value("${authentication.microsoft.entra-id.app.scope}")
     private String scope;
+    @Value("${authentication.microsoft.entra-id.app.redirect-url}")
+    private String redirectUrl;
 
     public String generateToken(String code) {
         String tokenAPIUrl = "https://login.microsoftonline.com/" + getApplicationID() + "/oauth2/v2.0/token";
@@ -48,7 +50,7 @@ public class TokenService {
         data.add("client_id", getClientId());
         data.add("scope", getScope());
         data.add("code", code);
-        data.add("redirect_uri", "http://localhost:8080/login/oauth2/code");
+        data.add("redirect_uri", getRedirectUrl());
         data.add("grant_type", "authorization_code");
         data.add("client_secret", getClientSecret());
 

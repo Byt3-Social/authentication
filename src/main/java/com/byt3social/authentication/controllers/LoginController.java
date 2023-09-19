@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/login/oauth2")
 @Getter
 public class LoginController {
     @Value("${authentication.microsoft.entra-id.profile.tenant-id}")
@@ -33,8 +31,8 @@ public class LoginController {
     private String clientSecret;
     @Value("${authentication.microsoft.entra-id.app.scope}")
     private String scope;
-    @Value("${authentication.microsoft.entra-id.app.redirect-url}")
-    private String redirectUrl;
+    @Value("${authentication.microsoft.entra-id.app.redirect-url-encoded}")
+    private String redirectUrlEncoded;
 
     @Autowired
     private TokenService tokenService;
@@ -43,9 +41,9 @@ public class LoginController {
     @Autowired
     private UserRepository userRepository;
 
-    @GetMapping("")
+    @GetMapping("/login")
     public ResponseEntity<Void> login() {
-        String loginAPIUrl = "https://login.microsoftonline.com/" + getApplicationID() + "/oauth2/v2.0/authorize?response_type=code&response_mode=query&client_id=" + getClientId() + "&scope=" + getScope() + "&redirect_uri=" + getRedirectUrl();
+        String loginAPIUrl = "https://login.microsoftonline.com/" + getApplicationID() + "/oauth2/v2.0/authorize?response_type=code&response_mode=query&client_id=" + getClientId() + "&scope=" + getScope() + "&redirect_uri=" + getRedirectUrlEncoded();
 
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(loginAPIUrl)).build();
     }

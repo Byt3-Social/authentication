@@ -5,9 +5,9 @@ import com.byt3social.authentication.models.User;
 import com.byt3social.authentication.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;

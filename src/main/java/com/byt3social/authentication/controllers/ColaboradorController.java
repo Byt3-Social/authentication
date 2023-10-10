@@ -1,5 +1,6 @@
 package com.byt3social.authentication.controllers;
 
+import com.byt3social.authentication.models.Colaborador;
 import com.byt3social.authentication.services.ColaboradorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -30,15 +31,15 @@ public class ColaboradorController {
 
     @PostMapping("/validar")
     public ResponseEntity validarToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
-        String[] bearer = authorization.split("Bearer ");
-        String token = bearer[1];
-
+        String token = authorization.replace("Bearer ", "");
         Boolean tokenValido = colaboradorService.validarTokenJWT(token);
 
         if(!tokenValido) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        Colaborador colaborador = colaboradorService.buscarColaborador(token);
+
+        return new ResponseEntity<>(colaborador, HttpStatus.OK);
     }
 }

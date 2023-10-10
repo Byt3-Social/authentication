@@ -66,13 +66,11 @@ public class ColaboradorService {
         data.add("client_secret", clientSecret);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(data, headers);
-
         AccessTokenDTO accessTokenDTO = tokenRequest.postForObject(tokenEndpoint, request, AccessTokenDTO.class);
 
         String token = accessTokenDTO.accessToken();
 
-        DecodedJWT tokenDecodificado = JWT.decode(token);
-        Colaborador colaborador = colaboradorRepository.findByEmail(tokenDecodificado.getClaim("unique_name").asString());
+        Colaborador colaborador = buscarColaborador(token);
 
         if(colaborador == null) {
             cadastrarColaborador(token);
@@ -99,6 +97,12 @@ public class ColaboradorService {
         }
 
         return true;
+    }
+
+    public Colaborador buscarColaborador(String token) {
+        DecodedJWT tokenDecodificado = JWT.decode(token);
+        Colaborador colaborador = colaboradorRepository.findByEmail(tokenDecodificado.getClaim("unique_name").asString());
+        return colaborador;
     }
 
     private void cadastrarColaborador(String token) {

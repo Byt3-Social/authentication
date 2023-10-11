@@ -1,15 +1,18 @@
 package com.byt3social.authentication.models;
 
+import com.byt3social.authentication.dto.OrganizacaoDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.util.Collection;
 import java.util.Date;
@@ -20,6 +23,7 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Getter
+@Setter
 public class Organizacao implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +42,13 @@ public class Organizacao implements UserDetails {
     @Column(name = "updated_at")
     @JsonProperty("updated_at")
     private Date updatedAt;
+
+    public Organizacao(OrganizacaoDTO organizacaoDTO, String senha) {
+        this.nomeEmpresarial = organizacaoDTO.nomeEmpresarial();
+        this.cnpj = organizacaoDTO.cnpj();
+        this.senha = BCrypt.hashpw(senha, BCrypt.gensalt());
+        this.organizacaoId = organizacaoDTO.organizacaoId();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

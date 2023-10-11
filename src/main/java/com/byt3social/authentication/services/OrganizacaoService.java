@@ -5,8 +5,11 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import com.byt3social.authentication.dto.OrganizacaoDTO;
 import com.byt3social.authentication.models.Organizacao;
 import com.byt3social.authentication.repositories.OrganizacaoRepository;
+import jakarta.transaction.Transactional;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +28,8 @@ public class OrganizacaoService implements UserDetailsService {
     private String secretKey;
     @Autowired
     private OrganizacaoRepository organizacaoRepository;
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public UserDetails loadUserByUsername(String cnpj) throws UsernameNotFoundException {
@@ -74,5 +79,15 @@ public class OrganizacaoService implements UserDetailsService {
 
     private Instant recuperarDataExpiracao() {
         return LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.of("-04:00"));
+    }
+
+    @Transactional
+    public void cadastrarUsuario(OrganizacaoDTO organizacaoDTO) {
+        String senha = RandomStringUtils.randomAlphanumeric(10, 11);
+        Organizacao organizacao = new Organizacao(organizacaoDTO, senha);
+
+        organizacaoRepository.save(organizacao);
+
+        emailService.notificarOrganizacao(organizacaoDTO, senha);
     }
 }

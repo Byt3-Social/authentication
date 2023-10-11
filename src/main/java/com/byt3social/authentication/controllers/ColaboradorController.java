@@ -15,21 +15,21 @@ public class ColaboradorController {
     @Autowired
     private ColaboradorService colaboradorService;
 
-    @GetMapping("/login")
+    @GetMapping("/colaborador/login")
     public ResponseEntity<Void> login() {
         String loginUrl = colaboradorService.recuperarUrlLogin();
 
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(loginUrl)).build();
     }
 
-    @GetMapping(value = "/code")
+    @GetMapping(value = "/colaborador/code")
     public ResponseEntity code(@RequestParam String code) {
         String tokenGerado = colaboradorService.gerarTokenJWT(code);
 
         return new ResponseEntity(tokenGerado, HttpStatus.OK);
     }
 
-    @PostMapping("/validar")
+    @PostMapping("/colaborador/validar")
     public ResponseEntity validarToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         String token = authorization.replace("Bearer ", "");
         Boolean tokenValido = colaboradorService.validarTokenJWT(token);

@@ -41,11 +41,12 @@ public class OrganizacaoService implements UserDetailsService {
             Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
             return JWT.create()
-                    .withAudience("byt3social.com")
-                    .withSubject("B3 Social")
+                    .withAudience("social.b3.com.br")
+                    .withIssuer("B3")
+                    .withSubject(organizacao.getNomeEmpresarial())
                     .withClaim("cnpj", organizacao.getCnpj())
-                    .withClaim("nome", organizacao.getNomeEmpresarial())
                     .withClaim("roles", List.of("B3Social.Organizacao"))
+                    .withIssuedAt(Instant.now())
                     .withExpiresAt(recuperarDataExpiracao())
                     .sign(algorithm);
         } catch(Exception e) {
@@ -58,8 +59,8 @@ public class OrganizacaoService implements UserDetailsService {
             Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
             JWTVerifier verifier = JWT.require(algorithm)
-                    .withAudience("byt3social.com")
-                    .withSubject("B3 Social")
+                    .withAudience("social.b3.com.br")
+                    .withIssuer("B3")
                     .build();
 
             verifier.verify(token);

@@ -1,6 +1,7 @@
 package com.byt3social.authentication.models;
 
 import com.byt3social.authentication.dto.OrganizacaoDTO;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
@@ -22,6 +23,7 @@ import java.util.List;
 @Entity(name = "Organizacao")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
+@JsonIgnoreProperties(value = {"senha", "password"})
 @Getter
 @Setter
 public class Organizacao implements UserDetails {

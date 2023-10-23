@@ -7,21 +7,16 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
-import com.byt3social.authentication.dto.AccessTokenDTO;
 import com.byt3social.authentication.models.Colaborador;
 import com.byt3social.authentication.repositories.ColaboradorRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 import java.net.URL;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -43,32 +38,10 @@ public class ColaboradorService {
     @Autowired
     private ColaboradorRepository colaboradorRepository;
 
-    public String recuperarUrlLogin() {
-        String loginUrl = "https://login.microsoftonline.com/" + applicationID + "/oauth2/v2.0/authorize?response_type=code&response_mode=query&client_id=" + clientId + "&scope=" + scope + "&redirect_uri=" + redirectUrlEncoded;
-
-        return loginUrl;
-    }
-
-    public String gerarTokenJWT(String code) {
-        String tokenEndpoint = "https://login.microsoftonline.com/" + applicationID + "/oauth2/v2.0/token";
-
-        RestTemplate tokenRequest = new RestTemplate();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
-        data.add("client_id", clientId);
-        data.add("scope", scope);
-        data.add("code", code);
-        data.add("redirect_uri", redirectUrl);
-        data.add("grant_type", "authorization_code");
-        data.add("client_secret", clientSecret);
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(data, headers);
-        AccessTokenDTO accessTokenDTO = tokenRequest.postForObject(tokenEndpoint, request, AccessTokenDTO.class);
-
-        String token = accessTokenDTO.accessToken();
+    public boolean login(String token) {
+        if(!validarTokenJWT(token)) {
+            return false;
+        }
 
         Colaborador colaborador = buscarColaborador(token);
 
@@ -76,7 +49,7 @@ public class ColaboradorService {
             cadastrarColaborador(token);
         }
 
-        return token;
+        return true;
     }
 
     public boolean validarTokenJWT(String token) {
@@ -92,11 +65,16 @@ public class ColaboradorService {
                     .withAudience("api://" + aud)
                     .build();
             decodedJWT = verifier.verify(token);
+
+            return !isJWTExpired(decodedJWT);
         } catch (Exception e) {
             return false;
         }
+    }
 
-        return true;
+    private boolean isJWTExpired(DecodedJWT decodedJWT) {
+        Date expiresAt = decodedJWT.getExpiresAt();
+        return expiresAt.before(new Date());
     }
 
     public Colaborador buscarColaborador(String token) {
@@ -105,7 +83,8 @@ public class ColaboradorService {
         return colaborador;
     }
 
-    private void cadastrarColaborador(String token) {
+    @Transactional
+    public void cadastrarColaborador(String token) {
         DecodedJWT tokenDecodificado = JWT.decode(token);
         String nomeColaborador = tokenDecodificado.getClaim("name").asString();
         String emailColaborador = tokenDecodificado.getClaim("unique_name").asString();
@@ -113,5 +92,9 @@ public class ColaboradorService {
         Colaborador colaborador = new Colaborador(nomeColaborador, emailColaborador, funcaoColaborador);
 
         colaboradorRepository.save(colaborador);
+    }
+
+    public Colaborador buscarColaboradorPorId(Integer colaboradorId) {
+        return colaboradorRepository.findById(colaboradorId).get();
     }
 }

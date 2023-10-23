@@ -1,11 +1,7 @@
 package com.byt3social.authentication.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,6 +12,7 @@ import java.util.List;
 @Entity(name = "Colaborador")
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class Colaborador {
@@ -27,11 +24,9 @@ public class Colaborador {
     private String funcao;
     @CreationTimestamp
     @Column(name = "created_at")
-    @JsonProperty("created_at")
     private Date createdAt;
     @UpdateTimestamp
     @Column(name = "updated_at")
-    @JsonProperty("updated_at")
     private Date updatedAt;
 
     public Colaborador(String nomeColaborador, String emailColaborador, List<String> funcaoColaborador) {

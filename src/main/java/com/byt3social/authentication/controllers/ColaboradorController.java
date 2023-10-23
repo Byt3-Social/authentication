@@ -8,25 +8,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-
 @RestController
 public class ColaboradorController {
     @Autowired
     private ColaboradorService colaboradorService;
 
-    @GetMapping("/colaborador/login")
-    public ResponseEntity<Void> login() {
-        String loginUrl = colaboradorService.recuperarUrlLogin();
+    @PostMapping("/colaborador/login")
+    public ResponseEntity<Void> login(@RequestHeader("Authorization") String token) {
+        token = token.replace("Bearer ", "");
 
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(loginUrl)).build();
-    }
+        if(!colaboradorService.login(token)) {
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
 
-    @GetMapping(value = "/colaborador/code")
-    public ResponseEntity code(@RequestParam String code) {
-        String tokenGerado = colaboradorService.gerarTokenJWT(code);
-
-        return new ResponseEntity(tokenGerado, HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @PostMapping("/colaborador/validar")
@@ -41,5 +36,12 @@ public class ColaboradorController {
         Colaborador colaborador = colaboradorService.buscarColaborador(token);
 
         return new ResponseEntity<>(colaborador, HttpStatus.OK);
+    }
+
+    @GetMapping("/colaborador/{id}")
+    public ResponseEntity consultarColaborador(@PathVariable("id") Integer colaboradorId) {
+        Colaborador colaborador = colaboradorService.buscarColaboradorPorId(colaboradorId);
+
+        return new ResponseEntity(colaborador, HttpStatus.OK);
     }
 }

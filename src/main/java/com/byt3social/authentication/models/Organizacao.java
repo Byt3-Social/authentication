@@ -2,12 +2,8 @@ package com.byt3social.authentication.models;
 
 import com.byt3social.authentication.dto.OrganizacaoDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,6 +18,7 @@ import java.util.List;
 @Table(name = "organizacoes")
 @Entity(name = "Organizacao")
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 @JsonIgnoreProperties(value = {"senha", "password"})
 @Getter
@@ -38,11 +35,9 @@ public class Organizacao implements UserDetails {
     private Integer organizacaoId;
     @CreationTimestamp
     @Column(name = "created_at")
-    @JsonProperty("created_at")
     private Date createdAt;
     @UpdateTimestamp
     @Column(name = "updated_at")
-    @JsonProperty("updated_at")
     private Date updatedAt;
 
     public Organizacao(OrganizacaoDTO organizacaoDTO, String senha) {

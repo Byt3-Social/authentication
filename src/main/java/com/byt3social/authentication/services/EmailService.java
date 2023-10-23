@@ -24,7 +24,7 @@ public class EmailService {
 
     public void notificarOrganizacao(OrganizacaoDTO organizacaoDTO, String senha) {
         MimeMessage message = mailSender.createMimeMessage();
-        String processoLink = appDomain + "/compliance/organizacoes";
+        String processoLink = appDomain + "/organizacao/login";
 
         try {
             message.setFrom(new InternetAddress("byt3social@gmail.com"));

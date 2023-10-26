@@ -156,6 +156,7 @@ public class OrganizacaoRepositoryTest {
         Collection<? extends GrantedAuthority> authorities = organizacao.getAuthorities();
 
         assertTrue(authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_ORGANIZACAO")));
+
     }
 
     @Test
@@ -208,5 +209,29 @@ public class OrganizacaoRepositoryTest {
         Organizacao organizacao = createOrganizacao("123456789", "Empresa ABC", senhaPlana, 1);
 
         assertTrue(BCrypt.checkpw(senhaPlana, organizacao.getPassword()));
+    }
+
+    @Test
+    void testIsAccountNonExpired() {
+        Organizacao organizacao = createOrganizacao("123456789", "Empresa ABC", "123456", 1);
+        assertTrue(organizacao.isAccountNonExpired());
+    }
+
+    @Test
+    void testIsAccountNonLocked() {
+        Organizacao organizacao = createOrganizacao("123456789", "Empresa ABC", "123456", 1);
+        assertTrue(organizacao.isAccountNonLocked());
+    }
+
+    @Test
+    void testIsCredentialsNonExpired() {
+        Organizacao organizacao = createOrganizacao("123456789", "Empresa ABC", "123456", 1);
+        assertTrue(organizacao.isCredentialsNonExpired());
+    }
+
+    @Test
+    void testIsEnabled() {
+        Organizacao organizacao = createOrganizacao("123456789", "Empresa ABC", "123456", 1);
+        assertTrue(organizacao.isEnabled());
     }
 }

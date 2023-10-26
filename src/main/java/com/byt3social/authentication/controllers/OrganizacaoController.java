@@ -28,10 +28,6 @@ public class OrganizacaoController {
 
        OrganizacaoToken token = new OrganizacaoToken(organizacaoService.gerarTokenJWT((Organizacao) authentication.getPrincipal()));
 
-       if(token == null) {
-           return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-       }
-
         return new ResponseEntity(token, HttpStatus.OK);
     }
 

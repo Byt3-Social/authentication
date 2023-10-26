@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ColaboradorControllerTest {
     @InjectMocks
@@ -53,9 +54,10 @@ public class ColaboradorControllerTest {
         Mockito.when(colaboradorService.validarTokenJWT(validToken)).thenReturn(true);
         Mockito.when(colaboradorService.buscarColaborador(validToken)).thenReturn(colaborador);
 
-        ResponseEntity response = colaboradorController.validarToken("Bearer " + validToken);
+        ResponseEntity<Colaborador> response = colaboradorController.validarToken("Bearer " + validToken);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
         assertEquals(colaborador, response.getBody());
     }
 
@@ -75,9 +77,10 @@ public class ColaboradorControllerTest {
         Colaborador colaborador = createColaborador();
         Mockito.when(colaboradorService.buscarColaboradorPorId(colaboradorId)).thenReturn(colaborador);
 
-        ResponseEntity response = colaboradorController.consultarColaborador(colaboradorId);
+        ResponseEntity<Colaborador> response = colaboradorController.consultarColaborador(colaboradorId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
         assertEquals(colaborador, response.getBody());
     }
 

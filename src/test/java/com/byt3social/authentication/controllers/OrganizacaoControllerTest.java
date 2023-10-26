@@ -37,6 +37,20 @@ public class OrganizacaoControllerTest {
     }
 
     @Test
+    void testLogin_InvalidCredentials() {
+        OrganizacaoLoginDTO loginDTO = new OrganizacaoLoginDTO("invalid_user", "invalid_password");
+
+        Mockito.when(authenticationManager.authenticate(Mockito.any())).thenThrow(new BadCredentialsException("Invalid credentials"));
+
+        try {
+            ResponseEntity response = organizacaoController.login(loginDTO);
+            fail("Expected BadCredentialsException was not thrown");
+        } catch (BadCredentialsException ex) {
+            assertEquals("Invalid credentials", ex.getMessage());
+        }
+    }
+
+    @Test
     void testLogin_ValidCredentials() {
         OrganizacaoLoginDTO loginDTO = new OrganizacaoLoginDTO("username", "password");
         Organizacao organizacao = createOrganizacao();
@@ -51,22 +65,6 @@ public class OrganizacaoControllerTest {
         ResponseEntity response = organizacaoController.login(loginDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    
-    @Test
-    void testLogin_InvalidCredentials() {
-
-        OrganizacaoLoginDTO loginDTO = new OrganizacaoLoginDTO("invalid_user", "invalid_password");
-
-        Mockito.when(authenticationManager.authenticate(Mockito.any())).thenThrow(new BadCredentialsException("Invalid credentials"));
-
-        try {
-            ResponseEntity response = organizacaoController.login(loginDTO);
-            fail("Expected BadCredentialsException was not thrown");
-        } catch (BadCredentialsException ex) {
-            assertEquals("Invalid credentials", ex.getMessage());
-        }
     }
 
 

@@ -2,6 +2,7 @@ package com.byt3social.authentication.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.Generated;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
